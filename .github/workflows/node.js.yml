@@ -49,4 +49,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: mydockerhub/github-action-test:latest
+          tags: wpdud2003/nest-ci-cd-test:latest
