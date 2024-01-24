@@ -13,4 +13,3 @@ fi
 cd /home/ubuntu/build
 sudo docker pull wpdud2003/nest-ci-cd-test
 sudo docker run -d -p 80:80 wpdud2003/nest-ci-cd-test
-sudo pm2 start dist/main.js

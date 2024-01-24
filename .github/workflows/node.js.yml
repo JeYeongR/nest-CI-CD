@@ -56,6 +56,12 @@ jobs:
     needs: docker-push
     runs-on: ubuntu-latest
     steps:
+      - name: AWS configure credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
       - name: deploy with AWS codeDeploy
         run: aws deploy create-deployment
           --application-name test-codedeploy
