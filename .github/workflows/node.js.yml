@@ -52,18 +52,17 @@ jobs:
           tags: wpdud2003/nest-ci-cd-test:latest
 
   deploy:
-    name: aws deploy
+    name: deploy
     needs: docker-push
     runs-on: ubuntu-latest
     steps:
-      - name: AWS configure credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Deploy
+        uses: appleboy/ssh-action@master
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-      - name: deploy with AWS codeDeploy
-        run: aws deploy create-deployment
-          --application-name test-codedeploy
-          --deployment-config-name CodeDeployDefault.OneAtATime
-          --deployment-group-name fasasd
+          host: ${{ secrets.REMOTE_IP }}
+          username: ${{ secrets.REMOTE_SSH_ID }}
+          key: ${{ secrets.REMOTE_SSH_KEY }}
+          port: ${{ secrets.REMOTE_SSH_PORT }}
+          script: |
+            sudo docker pull wpdud2003/nest-ci-cd-test
+            sudo docker run -d -p 80:80 wpdud2003/nest-ci-cd-test
