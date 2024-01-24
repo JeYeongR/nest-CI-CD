@@ -62,5 +62,6 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_KEY }}
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
+            sudo docker rm -f $(docker ps -qa)
             sudo docker pull wpdud2003/nest-ci-cd-test
-            sudo docker run -d -p 80:80 wpdud2003/nest-ci-cd-test
+            sudo docker run -d -p 80:80 --name nest wpdud2003/nest-ci-cd-test
