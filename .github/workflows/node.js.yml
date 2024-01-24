@@ -50,3 +50,14 @@ jobs:
         with:
           push: true
           tags: wpdud2003/nest-ci-cd-test:latest
+
+  deploy:
+    name: aws deploy
+    needs: docker-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy with AWS codeDeploy
+        run: aws deploy create-deployment
+          --application-name test-codedeploy
+          --deployment-config-name CodeDeployDefault.OneAtATime
+          --deployment-group-name fasasd
