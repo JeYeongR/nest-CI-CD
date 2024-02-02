@@ -35,15 +35,6 @@ jobs:
       - run: npm install
       - run: npm run build --if-present
       - run: npm test
-    services:
-      mysql:
-        image: mysql:8.1
-        env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-          MYSQL_DATABASE: recipe_test
-        ports:
-          - 3306:3306
-        options: --health-cmd=“mysqladmin ping” --health-interval=10s --health-timeout=5s --health-retries=3
 
   docker-push:
     name: docker build and push
