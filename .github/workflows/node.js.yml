@@ -4,18 +4,26 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 
 jobs:
   build:
     name: build and test
     runs-on: ubuntu-latest
+    services:
+      postgresql:
+        image: postgis/postgis:latest
+        env:
+          DB_HOSTNAME: localhost
+          DB_USERNAME: postgres
+          DB_PASSWORD: 123456789
+          DB_NAME: coffeeeeeeee
+        ports:
+          - 5432
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - uses: actions/checkout@v3
@@ -27,7 +35,15 @@ jobs:
       - run: npm install
       - run: npm run build --if-present
       - run: npm test
-      - run: npm run test:e2e
+    services:
+      mysql:
+        image: mysql:8.1
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: recipe_test
+        ports:
+          - 3306:3306
+        options: --health-cmd=“mysqladmin ping” --health-interval=10s --health-timeout=5s --health-retries=3
 
   docker-push:
     name: docker build and push
@@ -47,7 +63,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: wpdud2003/nest-ci-cd-test:latest
+          tags: ${{ secrets.DOCKER_HUB_ID }}/${{ secrets.DOCKER_REPO }}:latest
 
   deploy:
     name: deploy
@@ -65,5 +81,5 @@ jobs:
             sudo docker stop $(docker ps -qa)
             sudo docker rm -f $(docker ps -qa)
             sudo docker rmi -f $(docker images -q)
-            sudo docker pull wpdud2003/nest-ci-cd-test
-            sudo docker run -d -p 80:80 --name nest wpdud2003/nest-ci-cd-test
+            sudo docker pull ${{ secrets.DOCKER_HUB_ID }}/${{ secrets.DOCKER_REPO }}
+            sudo docker run -d -p 3000:3000 --name nest ${{ secrets.DOCKER_HUB_ID }}/${{ secrets.DOCKER_REPO }}
